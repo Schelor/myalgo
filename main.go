@@ -78,4 +78,10 @@ func main() {
 	fmt.Printf("ReverseString=%v\n", alonestrings.ReverseString([]byte{'h', 'e', 'l', 'l', 'o'}))
 	fmt.Printf("ReverseStr=%v\n", alonestrings.ReverseStr("abcdefg", 2))
 	fmt.Printf("ReplaceSpace=%v\n", alonestrings.ReplaceSpace("We are happy."))
+	fmt.Printf("ReplaceSpace2=%v\n", alonestrings.ReplaceSpace2("We are happy."))
+	// fmt.Printf("ReverseWords=%v\n", alonestrings.ReverseWords("We are happy."))
+	fmt.Printf("ReverseWords=%v\n", alonestrings.ReverseWords("  hello   world  "))
+	fmt.Printf("ReverseLeftWords=%v\n", alonestrings.ReverseLeftWords("abcdefg", 2))
+	fmt.Printf("ReverseLeftWords=%v\n", alonestrings.ReverseLeftWords2("lrloseumgh", 6))
+	fmt.Printf("ReverseLeftWords3=%v\n", alonestrings.ReverseLeftWords3("lrloseumgh", 6))
 }
