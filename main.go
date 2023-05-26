@@ -77,4 +77,5 @@ func main() {
 	fmt.Printf("IsPalindrome=%v\n", alonestrings.IsPalindrome("race a car"))
 	fmt.Printf("ReverseString=%v\n", alonestrings.ReverseString([]byte{'h', 'e', 'l', 'l', 'o'}))
 	fmt.Printf("ReverseStr=%v\n", alonestrings.ReverseStr("abcdefg", 2))
+	fmt.Printf("ReplaceSpace=%v\n", alonestrings.ReplaceSpace("We are happy."))
 }

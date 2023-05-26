@@ -80,3 +80,22 @@ func reverseRangeString(r []rune, start int, end int) {
 	}
 	return
 }
+
+func ReplaceSpace(s string) string {
+	if s == "" {
+		return s
+	}
+	builder := strings.Builder{}
+	runes := []rune(s)
+	for i := 0; i < len(runes); i++ {
+		//if runes[i] == ' ' { // 用字符比较也OK
+		//
+		//}
+		if unicode.IsSpace(runes[i]) {
+			builder.WriteString("%20")
+		} else {
+			builder.WriteRune(runes[i])
+		}
+	}
+	return builder.String()
+}
