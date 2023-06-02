@@ -240,3 +240,139 @@ func StrStr(main string, pattern string) int {
 func StrStr2(main string, pattern string) int {
 	return strings.Index(main, pattern)
 }
+
+// StrStr3 简化写法
+func StrStr3(main string, pattern string) int {
+	n := len(main)
+	m := len(pattern)
+	for i := 0; i < n-m+1; i++ {
+		j := 0
+		for j < m && pattern[j] == main[i+j] {
+			j++
+		}
+		// 匹配完成
+		if j == m {
+			return i
+		}
+	}
+	return -1
+}
+
+// StrStr_KMP KMP字符串匹配算法
+// 时间复杂度：O(n+m) 空间复杂度：O(m)
+func StrStr_KMP(main string, pattern string) int {
+	n := len(main)
+	m := len(pattern)
+	if m == 0 {
+		return 0
+	}
+	if m > n {
+		return -1
+	}
+	// 第一步：构建前缀表的next数组
+	next := BuildKmpNext(pattern)
+	// 第二步: 在主串上做模式串匹配,如果遇到不匹配的字符串
+	// 则通过前缀表next数组查找上次匹配OK的位置,避免重头匹配
+	var j = 0 // 前缀表起始位置,从0开始
+	for i := 0; i < n; i++ {
+		// 主串的每一个i与模式串的每一个j作匹配
+		for j > 0 && main[i] != pattern[j] { // i,j不匹配
+			j = next[j-1] // j 寻找之前匹配的位置,不断回到j的前一个位置
+		}
+		// 匹配，j和i同时向后移动
+		// i的增加在for循环里
+		if main[i] == pattern[j] {
+			j++
+		}
+		// 主串里出现了模式串,j不断自增,如果每一个都匹配,j自增到整个模式串长度位置
+		if j == m {
+			return i - m + 1
+		}
+	}
+	return -1
+}
+
+// BuildKmpNext 构建next数组有3步
+// 第一步：定义j变量,next数组,并初始化
+// 第二步: 处理前后缀字符不同的情况
+// 第三步: 处理前后缀字符串相同的情况
+func BuildKmpNext(pattern string) []int {
+	// 定义两个指针i和j，j指向前缀末尾位置，i指向后缀末尾位置。
+	var j = 0                            // j表示模式串每个前缀字符的末尾位置
+	var next = make([]int, len(pattern)) // next[i]表示的i(包括i)对应的最长相同前后缀长度
+	next[0] = 0                          // 表示下标为0的字符对应的最长相同前后缀长度=0
+	for i := 1; i < len(pattern); i++ {
+		// j要保证大于0，因为下面有取j-1作为数组下标的操作
+		// 如果i,j不相同,说明无相同前缀,回退一个位置继续检查
+		for j > 0 && pattern[i] != pattern[j] {
+			// 注意这里，是要找前一位的对应的回退位置了
+			j = next[j-1]
+		}
+		// 如果i,j位置字符相同说明,当前位置j就是一个相同前后缀长度
+		if pattern[i] == pattern[j] {
+			j++
+		}
+		next[i] = j // next[i]其实就是j的值,即始终与前一个j有关
+	}
+	return next
+}
+
+// 获取文本字符串的所有前缀子串,O(N)的时间复杂度
+func BuildPrefixString(s string) []string {
+	var prefixes []string
+	for i := 1; i < len(s); i++ {
+		prefixes = append(prefixes, s[0:i])
+	}
+	return prefixes
+}
+
+func KMPMatch(main string, pattern string) int {
+	n := len(main)
+	m := len(pattern)
+	if m == 0 || m > n {
+		return 0
+	}
+	count := 0
+	// 特殊处理:针对只有一个模式串字符串
+	if m == 1 {
+		if main[0] == pattern[0] {
+			count++
+		}
+		if main[1] == pattern[0] {
+			count++
+		}
+		return count
+	}
+	// 第一步：构建前缀表的next数组
+	next := BuildKmpNext(pattern)
+	// 第二步: 在主串上做模式串匹配,如果遇到不匹配的字符串
+	// 则通过前缀表next数组查找上次匹配OK的位置,避免重头匹配
+	var j = 0 // 前缀表起始位置,从0开始
+	for i := 0; i < n; i++ {
+		// 主串的每一个i与模式串的每一个j作匹配
+		for j > 0 && main[i] != pattern[j] { // i,j不匹配
+			j = next[j-1] // j 寻找之前匹配的位置,不断回到j的前一个位置
+		}
+		// 匹配，j和i同时向后移动
+		// i的增加在for循环里
+		if main[i] == pattern[j] {
+			j++
+		}
+		// 主串里出现了模式串,j不断自增,如果每一个都匹配,j自增到整个模式串长度位置
+		if j == m {
+			j = 0 // 重新匹配
+			count++
+		}
+	}
+	return count
+}
+
+// 重复的子字符串
+func RepeatedSubstringPattern(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	str := s + s
+	// 去掉头尾,不包含自身
+	return strings.Contains(str[1:len(str)-1], s)
+}

@@ -1,14 +1,27 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"myalgo/alonestrings"
 	"myalgo/arrays"
 	"myalgo/hashs"
 	"myalgo/integers"
+	"myalgo/stackqueues"
 )
 
 func main() {
+	// Create a new list and put some numbers in it.
+	l := list.New()
+	e4 := l.PushBack(4)
+	e1 := l.PushFront(1)
+	l.InsertBefore(3, e4)
+	l.InsertAfter(2, e1)
+	// Iterate through list and print its contents.
+	for e := l.Front(); e != nil; e = e.Next() {
+		fmt.Println(e.Value)
+	}
+
 	fmt.Println("div =", integers.Divide(15, 2))
 	fmt.Println("div =", integers.Divide(7, -3))
 	fmt.Println("div =", integers.Divide(-10999, -3))
@@ -84,4 +97,22 @@ func main() {
 	fmt.Printf("ReverseLeftWords=%v\n", alonestrings.ReverseLeftWords("abcdefg", 2))
 	fmt.Printf("ReverseLeftWords=%v\n", alonestrings.ReverseLeftWords2("lrloseumgh", 6))
 	fmt.Printf("ReverseLeftWords3=%v\n", alonestrings.ReverseLeftWords3("lrloseumgh", 6))
+	//fmt.Printf("BuildKmpNext=%v\n", alonestrings.BuildKmpNext("abcd"))
+	//fmt.Printf("StrStr_KMP=%v\n", alonestrings.StrStr_KMP("abcd", "ab"))
+	//fmt.Printf("BuildKmpNext=%v\n", alonestrings.BuildKmpNext("aabaaf"))
+	fmt.Printf("StrStr_KMP=%v\n", alonestrings.StrStr_KMP("aabaabaaf", "aabaaf"))
+	fmt.Printf("StrStr_KMP=%v\n", alonestrings.StrStr_KMP("xyz", "z"))
+	//fmt.Printf("BuildPrefixString=%v\n", alonestrings.BuildPrefixString("abcd"))
+	//fmt.Printf("RepeatedSubstringPattern=%v\n", alonestrings.RepeatedSubstringPattern("abab"))
+	//fmt.Printf("BuildKmpNext=%v\n", alonestrings.BuildKmpNext("aaaaaa"))
+	fmt.Printf("String=%v,BuildKmpNext=%v\n", "abcabcabcabc", alonestrings.BuildKmpNext("abcabcabcabc"))
+	fmt.Printf("String=%v,BuildKmpNext=%v\n", "abcabc", alonestrings.BuildKmpNext("abcabc"))
+	fmt.Printf("BuildPrefixString=%v\n", alonestrings.BuildPrefixString("abab"))
+	fmt.Printf("RepeatedSubstringPattern=%v\n", alonestrings.RepeatedSubstringPattern("abcabcabcabc"))
+	fmt.Printf("IsValid=%v\n", stackqueues.IsValid("[{()}][]"))
+	fmt.Printf("IsValid=%v\n", stackqueues.IsValid2("[{()}][]"))
+	fmt.Printf("RemoveDuplicates=%v\n", stackqueues.RemoveDuplicates2("abbaca"))
+	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"4", "13", "5", "/", "+"}))
+	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"4", "3", "-"}))
+	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"}))
 }
