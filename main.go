@@ -6,6 +6,7 @@ import (
 	"myalgo/alonestrings"
 	"myalgo/arrays"
 	"myalgo/hashs"
+	"myalgo/heaps"
 	"myalgo/integers"
 	"myalgo/stackqueues"
 )
@@ -111,8 +112,13 @@ func main() {
 	fmt.Printf("RepeatedSubstringPattern=%v\n", alonestrings.RepeatedSubstringPattern("abcabcabcabc"))
 	fmt.Printf("IsValid=%v\n", stackqueues.IsValid("[{()}][]"))
 	fmt.Printf("IsValid=%v\n", stackqueues.IsValid2("[{()}][]"))
-	fmt.Printf("RemoveDuplicates=%v\n", stackqueues.RemoveDuplicates2("abbaca"))
+	fmt.Printf("RemoveDuplicates=%v\n", stackqueues.RemoveDuplicates("abbaca"))
 	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"4", "13", "5", "/", "+"}))
 	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"4", "3", "-"}))
 	fmt.Printf("EvalRPN=%v\n", stackqueues.EvalRPN([]string{"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"}))
+	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
+	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow2([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
+	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow([]int{7, 2, 4}, 2))
+	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow2([]int{7, 2, 4}, 2))
+	fmt.Printf("HeapDemo=%v\n", heaps.Demo())
 }
