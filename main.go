@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myalgo/alonestrings"
 	"myalgo/arrays"
+	"myalgo/binarytrees"
 	"myalgo/hashs"
 	"myalgo/heaps"
 	"myalgo/integers"
@@ -121,4 +122,31 @@ func main() {
 	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow([]int{7, 2, 4}, 2))
 	fmt.Printf("MaxSlidingWindow=%v\n", stackqueues.MaxSlidingWindow2([]int{7, 2, 4}, 2))
 	fmt.Printf("HeapDemo=%v\n", heaps.Demo())
+
+	fmt.Printf("PreorderTraversal=%v\n", binarytrees.PreorderTraversal(createTree()))
+	fmt.Printf("PreorderTraversalByLoop=%v\n", binarytrees.PreorderTraversalByLoop(createTree()))
+	fmt.Printf("InorderTraversalByRecursive=%v\n", binarytrees.InorderTraversalByRecursive(createTree()))
+	fmt.Printf("InorderTraversalByLoop=%v\n", binarytrees.InorderTraversalByLoop(createTree()))
+	fmt.Printf("PostorderTraversalByRecursive=%v\n", binarytrees.PostorderTraversalByRecursive(createTree()))
+	fmt.Printf("PostorderTraversalByLoop=%v\n", binarytrees.PostorderTraversalByLoop(createTree()))
+	fmt.Printf("LevelOrder=%v\n", binarytrees.LevelOrder(createLevelTree()))
+	fmt.Printf("LevelOrderByArray=%v\n", binarytrees.LevelOrderByArray(createLevelTree()))
+	fmt.Printf("MaxDepth=%v\n", binarytrees.MaxDepth(createLevelTree()))
+
+}
+
+func createTree() *binarytrees.TreeNode {
+	c := &binarytrees.TreeNode{Val: 3}
+	b := &binarytrees.TreeNode{Val: 2, Left: c, Right: nil}
+	a := &binarytrees.TreeNode{Val: 1, Left: nil, Right: b}
+	return a
+}
+
+func createLevelTree() *binarytrees.TreeNode {
+	a := &binarytrees.TreeNode{Val: 3,
+		Left: &binarytrees.TreeNode{Val: 9},
+		Right: &binarytrees.TreeNode{Val: 20,
+			Left:  &binarytrees.TreeNode{Val: 15},
+			Right: &binarytrees.TreeNode{Val: 7}}}
+	return a
 }
