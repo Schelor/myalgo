@@ -223,3 +223,16 @@ func MaxDepth(root *TreeNode) int {
 	}
 	return max
 }
+
+func LevelOrderBottom(root *TreeNode) [][]int {
+	levelOrder := LevelOrder(root)
+	for i, j := 0, len(levelOrder)-1; i < j; i, j = i+1, j-1 {
+		levelOrder[i], levelOrder[j] = levelOrder[j], levelOrder[i]
+	}
+	return levelOrder
+}
+
+// 二叉树右视图
+func RightSideView(root *TreeNode) []int {
+
+}
