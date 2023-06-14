@@ -1,6 +1,9 @@
 package binarytrees
 
-import "container/list"
+import (
+	"container/list"
+	"math"
+)
 
 // 定义树节点
 type TreeNode struct {
@@ -232,7 +235,168 @@ func LevelOrderBottom(root *TreeNode) [][]int {
 	return levelOrder
 }
 
-// 二叉树右视图
+// 二叉树右视图,用数组模拟队列
 func RightSideView(root *TreeNode) []int {
+	view := make([]int, 0)
+	if root == nil {
+		return view
+	}
+	queue := []*TreeNode{root} // 定义一个队列
+	for len(queue) > 0 {
+		size := len(queue)
+		for i := 1; i <= size; i++ {
+			node := queue[0]  // 队首出队结点,队首结点固定在下标为0
+			queue = queue[1:] // 出队后,更新队列
+			if i == size {    // 当前层最后一个节点
+				view = append(view, node.Val)
+			}
+			// 下一层
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return view
+}
 
+func AverageOfLevels(root *TreeNode) []float64 {
+	avgs := make([]float64, 0)
+	if root == nil {
+		return avgs
+	}
+	queue := list.New() // 通过双端链表来作为队列
+	queue.PushBack(root)
+	for queue.Len() > 0 {
+		size := queue.Len()
+		sum := 0
+		for i := 0; i < size; i++ {
+			node := queue.Remove(queue.Front()).(*TreeNode)
+			sum += node.Val
+			if node.Left != nil { // 下一层入队列
+				queue.PushBack(node.Left)
+			}
+			if node.Right != nil {
+				queue.PushBack(node.Right)
+			}
+		}
+		// 计算当前层的平均值
+		avgs = append(avgs, float64(sum)/float64(size))
+
+	}
+	return avgs
+}
+
+type Node struct {
+	Val      int
+	Children []*Node
+}
+
+func NTreeLevelOrder(root *Node) [][]int {
+	nodeList := make([][]int, 0) // 存放每层遍历的结果
+	if root == nil {
+		return nodeList
+	}
+	var queue *list.List = list.New() // 定义一个队列
+	queue.PushBack(root)              // 根结点入队，队尾入队
+	for queue.Len() > 0 {
+		// 当前层节点数量,由于可能入队下一层的结点,为了出队固定数量的结点,这里只能使用Len()
+		size := queue.Len()
+		levelNodes := make([]int, 0)
+		for i := 0; i < size; i++ {
+			var node *Node = queue.Remove(queue.Front()).(*Node) // 出队队首结点
+			// 检查下一层的所有结点，如果存在则入队
+			if node.Children != nil && len(node.Children) > 0 {
+				for _, v := range node.Children {
+					queue.PushBack(v)
+				}
+			}
+			levelNodes = append(levelNodes, node.Val)
+		}
+		nodeList = append(nodeList, levelNodes)
+	}
+	return nodeList
+}
+
+func MinDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	queue := []*TreeNode{root}
+	min := 0
+	for len(queue) > 0 {
+		size := len(queue) // 出队当前层的节点
+		min++
+		for i := 0; i < size; i++ {
+			node := queue[0]  // 队首出队
+			queue = queue[1:] // 更新队列
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+			// 当前层的某个结点,无子节点,其所对应的层次即最小深度
+			if node.Left == nil && node.Right == nil {
+				return min
+			}
+		}
+	}
+	return min
+}
+func MinDepth2(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	if root.Left == nil && root.Right == nil {
+		return 1
+	}
+	depth := math.MaxInt
+	if root.Left != nil {
+		depth = min(depth, MinDepth2(root.Left))
+	}
+	if root.Right != nil {
+		depth = min(depth, MinDepth2(root.Right))
+	}
+	return depth + 1
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
+
+func LargestValues(root *TreeNode) []int {
+	nodeList := make([]int, 0) // 存放每层遍历的结果
+	if root == nil {
+		return nodeList
+	}
+	var queue *list.List = list.New() // 定义一个队列
+	queue.PushBack(root)              // 根结点入队，队尾入队
+	for queue.Len() > 0 {
+		size := queue.Len() // 当前层节点数量,由于可能入队下一层的结点,为了出队固定数量的结点,这里只能使用Len()
+		maxVal := math.MinInt
+		for i := 0; i < size; i++ {
+			var node *TreeNode = queue.Remove(queue.Front()).(*TreeNode) // 出队队首结点
+			if node.Left != nil {
+				queue.PushBack(node.Left)
+			}
+			if node.Right != nil {
+				queue.PushBack(node.Right)
+			}
+			maxVal = max(maxVal, node.Val)
+		}
+		nodeList = append(nodeList, maxVal)
+	}
+	return nodeList
 }

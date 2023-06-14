@@ -133,6 +133,9 @@ func main() {
 	fmt.Printf("LevelOrderByArray=%v\n", binarytrees.LevelOrderByArray(createLevelTree()))
 	fmt.Printf("MaxDepth=%v\n", binarytrees.MaxDepth(createLevelTree()))
 	fmt.Printf("LevelOrderBottom=%v\n", binarytrees.LevelOrderBottom(createLevelTree()))
+	fmt.Printf("RightSideView=%v\n", binarytrees.RightSideView(createLevelTree()))
+	fmt.Printf("AverageOfLevels=%v\n", binarytrees.AverageOfLevels(createLevelTree()))
+	fmt.Printf("MinDepth=%v\n", binarytrees.MinDepth(createLevelTree()))
 
 }
 
