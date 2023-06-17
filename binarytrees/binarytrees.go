@@ -289,36 +289,36 @@ func AverageOfLevels(root *TreeNode) []float64 {
 	return avgs
 }
 
-type Node struct {
-	Val      int
-	Children []*Node
-}
+//type Node struct {
+//	Val      int
+//	Children []*Node
+//}
 
-func NTreeLevelOrder(root *Node) [][]int {
-	nodeList := make([][]int, 0) // 存放每层遍历的结果
-	if root == nil {
-		return nodeList
-	}
-	var queue *list.List = list.New() // 定义一个队列
-	queue.PushBack(root)              // 根结点入队，队尾入队
-	for queue.Len() > 0 {
-		// 当前层节点数量,由于可能入队下一层的结点,为了出队固定数量的结点,这里只能使用Len()
-		size := queue.Len()
-		levelNodes := make([]int, 0)
-		for i := 0; i < size; i++ {
-			var node *Node = queue.Remove(queue.Front()).(*Node) // 出队队首结点
-			// 检查下一层的所有结点，如果存在则入队
-			if node.Children != nil && len(node.Children) > 0 {
-				for _, v := range node.Children {
-					queue.PushBack(v)
-				}
-			}
-			levelNodes = append(levelNodes, node.Val)
-		}
-		nodeList = append(nodeList, levelNodes)
-	}
-	return nodeList
-}
+//func NTreeLevelOrder(root *Node) [][]int {
+//	nodeList := make([][]int, 0) // 存放每层遍历的结果
+//	if root == nil {
+//		return nodeList
+//	}
+//	var queue *list.List = list.New() // 定义一个队列
+//	queue.PushBack(root)              // 根结点入队，队尾入队
+//	for queue.Len() > 0 {
+//		// 当前层节点数量,由于可能入队下一层的结点,为了出队固定数量的结点,这里只能使用Len()
+//		size := queue.Len()
+//		levelNodes := make([]int, 0)
+//		for i := 0; i < size; i++ {
+//			var node *Node = queue.Remove(queue.Front()).(*Node) // 出队队首结点
+//			// 检查下一层的所有结点，如果存在则入队
+//			if node.Children != nil && len(node.Children) > 0 {
+//				for _, v := range node.Children {
+//					queue.PushBack(v)
+//				}
+//			}
+//			levelNodes = append(levelNodes, node.Val)
+//		}
+//		nodeList = append(nodeList, levelNodes)
+//	}
+//	return nodeList
+//}
 
 func MinDepth(root *TreeNode) int {
 	if root == nil {
@@ -399,4 +399,70 @@ func LargestValues(root *TreeNode) []int {
 		nodeList = append(nodeList, maxVal)
 	}
 	return nodeList
+}
+
+type Node struct {
+	Val   int
+	Left  *Node
+	Right *Node
+	Next  *Node
+}
+
+// 找到每层结点，放入到列表，然后遍历这个列表,依次设置节点next
+// 时间复杂度O(n),遍历N个结点, 空间复杂度O(N) 存放每层的结点
+func connect(root *Node) *Node {
+	if root == nil {
+		return root
+	}
+	queue := list.New() // 定义队列
+	queue.PushBack(root)
+	for queue.Len() > 0 {
+		size := queue.Len()                       // 当前层的节点数量,只出队固定数量的结点
+		var levelNodes []*Node = make([]*Node, 0) // 存放每层的结点
+		for i := 0; i < size; i++ {
+			var node *Node = queue.Remove(queue.Front()).(*Node) // 出队队首结点
+			// 检查下一层的所有结点，如果存在则入队
+			if node.Left != nil { // 下一层入队列
+				queue.PushBack(node.Left)
+			}
+			if node.Right != nil {
+				queue.PushBack(node.Right)
+			}
+			levelNodes = append(levelNodes, node)
+		}
+		// 遍历当前层节点,依次设置next
+		for i := 0; i < len(levelNodes)-1; i++ {
+			levelNodes[i].Next = levelNodes[i+1]
+		}
+	}
+	return root
+}
+
+func connect2(root *Node) *Node {
+	if root == nil {
+		return root
+	}
+	queue := list.New() // 定义队列
+	queue.PushBack(root)
+	for queue.Len() > 0 {
+		size := queue.Len() // 当前层的节点数量,只出队固定数量的结点
+		prevNode := queue.Front().Value.(*Node)
+		for i := 0; i < size; i++ {
+			var node *Node = queue.Remove(queue.Front()).(*Node) // 出队队首结点
+			// 本层依次出队的结点,从第二个开始，让前一个依次执行当前节点
+			if i >= 1 {
+				prevNode.Next = node
+				prevNode = node
+			}
+			// 检查下一层的所有结点，如果存在则入队
+			if node.Left != nil { // 下一层入队列
+				queue.PushBack(node.Left)
+			}
+			if node.Right != nil {
+				queue.PushBack(node.Right)
+			}
+
+		}
+	}
+	return root
 }
