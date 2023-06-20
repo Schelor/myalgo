@@ -136,6 +136,9 @@ func main() {
 	fmt.Printf("RightSideView=%v\n", binarytrees.RightSideView(createLevelTree()))
 	fmt.Printf("AverageOfLevels=%v\n", binarytrees.AverageOfLevels(createLevelTree()))
 	fmt.Printf("MinDepth=%v\n", binarytrees.MinDepth(createLevelTree()))
+	fmt.Printf("InvertTree=%v\n", binarytrees.InvertTree(createRevertTree()))
+	fmt.Printf("IsSymmetric=%v\n", binarytrees.IsSymmetric(createRevertTree()))
+	fmt.Printf("IsSymmetricV3=%v\n", binarytrees.IsSymmetricV3(createRevertTree()))
 
 }
 
@@ -152,5 +155,12 @@ func createLevelTree() *binarytrees.TreeNode {
 		Right: &binarytrees.TreeNode{Val: 20,
 			Left:  &binarytrees.TreeNode{Val: 15},
 			Right: &binarytrees.TreeNode{Val: 7}}}
+	return a
+}
+
+func createRevertTree() *binarytrees.TreeNode {
+	a := &binarytrees.TreeNode{Val: 1,
+		Left:  &binarytrees.TreeNode{Val: 2},
+		Right: &binarytrees.TreeNode{Val: 2}}
 	return a
 }

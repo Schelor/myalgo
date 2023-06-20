@@ -466,3 +466,225 @@ func connect2(root *Node) *Node {
 	}
 	return root
 }
+
+func InvertTree(root *TreeNode) *TreeNode {
+	return InvertTree1(root)
+}
+
+// 翻转二叉树,递归法
+// 时间复杂度：O(N), 空间复杂度O(N)
+func InvertTree1(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	root.Left, root.Right = InvertTree1(root.Right), InvertTree1(root.Left)
+	return root
+}
+
+// 翻转二叉树,层序遍历
+// 时间复杂度：O(N), 空间复杂度O(N)
+func InvertTree2(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	queue := list.New() // 定义队列
+	queue.PushBack(root)
+	for queue.Len() > 0 {
+		size := queue.Len() // 当前层的节点数量,只出队固定数量的结点
+		for i := 0; i < size; i++ {
+			node := (queue.Remove(queue.Front())).(*TreeNode) // 当前层的每一个结点
+			node.Left, node.Right = node.Right, node.Left     // 交换本层左右结点
+			if node.Left != nil {                             // 下一层入队列
+				queue.PushBack(node.Left)
+			}
+			if node.Right != nil {
+				queue.PushBack(node.Right)
+			}
+		}
+	}
+	return root
+}
+
+// 翻转二叉树,递归法-前序遍历模式
+// 时间复杂度：O(N), 空间复杂度O(N)
+func InvertTreeV1(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	// 先遍历当前节点,直接读取left,right并交换
+	root.Left, root.Right = root.Right, root.Left // 当前节点的左右子节点交换
+	InvertTreeV1(root.Left)                       // 反转左子树
+	InvertTreeV1(root.Right)                      // 反正右子树
+	return root
+}
+
+// 翻转二叉树,迭代法-前序遍历模式-借助栈
+// 时间复杂度：O(N), 空间复杂度O(N)
+func InvertTreeV2(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	stack := make([]*TreeNode, 0) // 用数组模拟栈
+	node := root
+	for node != nil || len(stack) > 0 {
+		for node != nil {
+			// 前序遍历，遇到一个结点直接处理，自顶向下
+			node.Left, node.Right = node.Right, node.Left
+			stack = append(stack, node)
+			node = node.Left
+		}
+		// 到达最左子节
+		node = stack[len(stack)-1] // 出栈栈顶结点
+		stack = stack[0 : len(stack)-1]
+		node = node.Right // 继续考察是否还有右子节点
+	}
+	return root
+}
+
+// 翻转二叉树,迭代法-后续序遍历模式-借助栈
+// 时间复杂度：O(N), 空间复杂度O(N)
+func InvertTreeV3(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	stack := make([]*TreeNode, 0) // 用数组模拟栈
+	node := root
+	var pre *TreeNode = nil // 上一次遍历过/上一次处理过的结点
+	for node != nil || len(stack) > 0 {
+		for node != nil {
+			stack = append(stack, node) // 自顶向下遍历,上层的节点先入栈
+			node = node.Left
+		}
+		// 到达最左子节点或最左子节点的父节点且该父节点有右子结点
+		node = stack[len(stack)-1] // 出栈栈顶结点
+		stack = stack[0 : len(stack)-1]
+		if node.Right == nil || node.Right == pre {
+			node.Left, node.Right = node.Right, node.Left
+			pre = node // 当前节点已处理完成,标记为上次处理的结点
+			node = nil // 继续出栈下一个结点
+		} else {
+			stack = append(stack, node) // 存在右子结点，继续入栈
+			node = node.Right
+		}
+	}
+	return root
+}
+
+// 对称二叉树
+func IsSymmetric(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	// 通过递归来实现
+	return compareNode(root.Left, root.Right)
+}
+
+// 递归三步骤
+// 第一步：确定递归函数的参数和返回值： 确定哪些参数是递归的过程中需要处理的，那么就在递归函数里加上这个参数，
+// 并且还要明确每次递归的返回值是什么进而确定递归函数的返回类型。
+// 第二步：确定终止条件： 写完了递归算法, 运行的时候，经常会遇到栈溢出的错误，
+//
+//	就是没写终止条件或者终止条件写的不对，操作系统也是用一个栈的结构来保存每一层递归的信息，
+//	如果递归没有终止，操作系统的内存栈必然就会溢出。
+//
+// 第三步：确定单层递归的逻辑，确定每一层递归需要处理的信息。在这里也就会重复调用自己来实现递归的过程。
+func compareNode(left *TreeNode, right *TreeNode) bool {
+	// 递归终止分解条件
+	if left == nil && right == nil { // 左右子节点都为空，对称
+		return true
+	}
+	if left != nil && right == nil { // 左不为空,右为空,不对称
+		return false
+	}
+	if left == nil && right != nil { // 左为空,右不为空,不对称
+		return false
+	}
+	if left.Val != right.Val { // 左右不为空,但值不相同
+		return false
+	}
+	// 到这里表示左右都不为空,此时需要向下分解(递归)
+	// 逻辑是要判断当前左右节点是否对称 先判断外侧其左子节点与右子节点是否对称，
+	// 再判断内测右子节点与左子节点是否对称
+	outside := compareNode(left.Left, right.Right)
+	inside := compareNode(left.Right, right.Left)
+	return outside && inside // 外侧相同且内侧相同才对称
+}
+
+// 对称二叉树,通过迭代来实现，这里借住队列
+// 依次入队外侧两结点，内侧两节点
+func IsSymmetricV2(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	queue := list.New() // 用双向链表来模拟队列
+	queue.PushBack(root.Left)
+	queue.PushBack(root.Right)
+	for queue.Len() > 0 {
+		// 依次从队列里取出2个结点（这两个节点分别代表外侧，内侧对称的两个结点)
+		left := queue.Remove(queue.Front()).(*TreeNode)
+		right := queue.Remove(queue.Front()).(*TreeNode)
+		// 如果左右都为空,这种属于对称,提前处理
+		if left == nil && right == nil {
+			continue
+		}
+		// 不对称的场景条件
+		// 1.左不为空,右为空
+		// 2.左为空,右不为空
+		// 3.左右值不同
+		if left != nil && right == nil {
+			return false
+		}
+		if left == nil && right != nil {
+			return false
+		}
+		if left.Val != right.Val {
+			return false
+		}
+		// 剩下的情况为左右都不为空,且值相同,继续看下一层
+		// 依次入队外侧2结点，内侧2节点
+		queue.PushBack(left.Left)   // 加入左节点左孩子
+		queue.PushBack(right.Right) // 加入右节点右孩子
+		queue.PushBack(left.Right)  // 加入左节点右孩子
+		queue.PushBack(right.Left)  // 加入右节点左孩子
+	}
+	return true // 迭代就自顶向下,如果都对称,返回true
+}
+
+// 对称二叉树,通过迭代来实现，基于数组来模拟队列
+// 依次入队外侧两结点，内侧两节点
+func IsSymmetricV3(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	queue := []*TreeNode{root.Left, root.Right}
+	for len(queue) > 0 {
+		// 依次从队列里取出2个结点（这两个节点分别代表外侧，内侧对称的两个结点)
+		left, right := queue[0], queue[1]
+		queue = queue[2:] // 出队2个结点
+		// 如果左右都为空,这种属于对称,提前处理
+		if left == nil && right == nil {
+			continue
+		}
+		// 不对称的场景条件
+		// 1.左不为空,右为空
+		// 2.左为空,右不为空
+		// 3.左右值不同
+		if left != nil && right == nil {
+			return false
+		}
+		if left == nil && right != nil {
+			return false
+		}
+		if left.Val != right.Val {
+			return false
+		}
+		// 剩下的情况为左右都不为空,且值相同,继续看下一层
+		// 依次入队外侧2结点，内侧2节点
+		// 加入左节点左孩子
+		// 加入右节点右孩子
+		// 加入左节点右孩子
+		// 加入右节点左孩子
+		queue = append(queue, left.Left, right.Right, left.Right, right.Left)
+	}
+	return true // 迭代就自顶向下,如果都对称,返回true
+}
