@@ -139,6 +139,12 @@ func main() {
 	fmt.Printf("InvertTree=%v\n", binarytrees.InvertTree(createRevertTree()))
 	fmt.Printf("IsSymmetric=%v\n", binarytrees.IsSymmetric(createRevertTree()))
 	fmt.Printf("IsSymmetricV3=%v\n", binarytrees.IsSymmetricV3(createRevertTree()))
+	fmt.Printf("BinaryTreePathsV1=%v\n", binarytrees.BinaryTreePathsV1(createRevertTree()))
+	fmt.Printf("BinaryTreePathsV1=%v\n", binarytrees.BinaryTreePathsV1(createLevelTree()))
+	fmt.Printf("FindBottomLeftValueV1=%v\n", binarytrees.FindBottomLeftValueV1(createLevelTree()))
+	fmt.Printf("HasPathSumV1=%v\n", binarytrees.HasPathSumV1(createLevelTree(), 30))
+	fmt.Printf("PathSumV1=%v\n", binarytrees.PathSumV1(createLevelTree(), 30))
+	fmt.Printf("PathSumV2=%v\n", binarytrees.PathSumV2(createLevelTree(), 30))
 
 }
 

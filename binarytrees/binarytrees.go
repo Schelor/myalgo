@@ -3,6 +3,7 @@ package binarytrees
 import (
 	"container/list"
 	"math"
+	"strconv"
 )
 
 // 定义树节点
@@ -687,4 +688,392 @@ func IsSymmetricV3(root *TreeNode) bool {
 		queue = append(queue, left.Left, right.Right, left.Right, right.Left)
 	}
 	return true // 迭代就自顶向下,如果都对称,返回true
+}
+
+// 求完全二叉树的节点数，直接遍历
+func countNodesV1(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	queue := []*TreeNode{root}
+	count := 0
+	for len(queue) > 0 {
+		size := len(queue) // 当前层的节点数
+		count += size      // 累计节点数
+		for i := 0; i < size; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return count
+}
+
+// 求完全二叉树的节点数-递归法
+func countNodesV2(root *TreeNode) int {
+	return sumNode(root)
+}
+
+// 递归三步骤:第一步确定递归函数的入参返回值
+// 求解当前节点的子树节点数,入参为一个节点,返回值为该节点的包含的所有子节点数
+func sumNode(node *TreeNode) int {
+	// 第二步：确定结束分解的条件
+	// 如果当前节点为空,不能再继续分解了则结束
+	if node == nil {
+		return 0
+	}
+	// 第三步：确认递归过程
+	// 确定单层递归的逻辑，确定每一层递归需要处理的信息。在这里也就会重复调用自己来实现递归的过程
+	sumLeft := sumNode(node.Left)   // 获取左子节点
+	sumRight := sumNode(node.Right) // 获取右子节点数
+	return sumLeft + sumRight + 1   // 加上当前节点数-固定为1
+}
+
+// 判断是否为平衡二叉树,高度差绝对值小于等于1
+// 递归求解
+func isBalancedV1(root *TreeNode) bool {
+	// 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
+	h := getHeight(root)
+	if h == -1 {
+		return false
+	}
+	return true
+}
+
+// 递归三步骤：1.确定函数入参/返回值
+// 入参为每个节点,返回值为当前节点的高度
+func getHeight(node *TreeNode) int {
+	// 2.确定终止分解的条件
+	if node == nil {
+		return 0
+	}
+	leftHeight := getHeight(node.Left)
+	if leftHeight == -1 {
+		return -1
+	}
+	rightHeight := getHeight(node.Right)
+	if rightHeight == -1 {
+		return -1
+	}
+	// 绝对值差大于1，也不满足平衡树
+	if math.Abs(float64(leftHeight-rightHeight)) > 1 {
+		return -1
+	}
+	return max(leftHeight, rightHeight) + 1 // 返回当前节点的实际高度
+}
+
+// 二叉树所有路径-递归-自顶向下分解-自底向上返回
+func BinaryTreePathsV1(root *TreeNode) []string {
+	return nodePaths(root)
+}
+func nodePaths(node *TreeNode) []string {
+	if node == nil {
+		return []string{}
+	}
+	leftPaths := nodePaths(node.Left)
+	rightPaths := nodePaths(node.Right)
+	if len(leftPaths) == 0 && len(rightPaths) == 0 {
+		paths := []string{strconv.Itoa(node.Val)}
+		return paths
+	}
+	paths := make([]string, 0)
+	if len(leftPaths) > 0 {
+		for _, v := range leftPaths {
+			paths = append(paths, strconv.Itoa(node.Val)+"->"+v)
+		}
+	}
+	if len(rightPaths) > 0 {
+		for _, v := range rightPaths {
+			paths = append(paths, strconv.Itoa(node.Val)+"->"+v)
+		}
+	}
+	return paths
+}
+
+// 二叉树所有路径-递归-自顶向下-分解过程中直接拼接路径,然后加入结果集
+// 这种递归没有返回值,是直接访问一个公共内存变量,基于语言特性才有的用法
+// 这种方式不用每个节点都申请一份数组空间,复用同一个结果存放空间
+func BinaryTreePathsV2(root *TreeNode) []string {
+	result := make([]string, 0)
+	// 递归三步骤:1.定义递归函数入参/返回值
+	var nodePaths func(node *TreeNode, path string) // 这里定义一个函数变量,走闭包访问
+	nodePaths = func(node *TreeNode, path string) {
+		// 递归三步骤: 2.定义终止条件
+		if node == nil {
+			return
+		}
+		if node.Left == nil && node.Right == nil { // 到叶子结点了
+			path = path + strconv.Itoa(node.Val)
+			result = append(result, path)
+			return
+		}
+		path = path + strconv.Itoa(node.Val) + "->"
+		// 递归三步骤: 3.定义本层调用逻辑,递归过程是怎样的
+		if node.Left != nil {
+			nodePaths(node.Left, path)
+		}
+		if node.Right != nil {
+			nodePaths(node.Right, path)
+		}
+	}
+	nodePaths(root, "")
+	return result
+}
+
+// 左叶子节点之和-通过层序遍历
+// 遍历当前层时,需要识别下一层节点是否为左叶子
+func sumOfLeftLeavesV2(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	queue := []*TreeNode{root}
+	sum := 0
+	for len(queue) > 0 {
+		size := len(queue)
+		for i := 0; i < size; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil { // 左叶子一定在Left节点
+				// node.Left左叶子,加入累加和
+				if node.Left.Left == nil && node.Left.Right == nil {
+					sum += node.Left.Val
+				}
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return sum
+}
+
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+// 递归-前序遍历
+func sumOfLeftLeavesV3(root *TreeNode) int {
+	res := 0
+	var dfs func(node *TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		// 如果节点为左叶子,加入累计和
+		if node.Left != nil && node.Left.Left == nil && node.Left.Right == nil {
+			res += node.Left.Val
+		}
+		dfs(node.Left)  // 继续看左叶子的子节点
+		dfs(node.Right) // 继续看右叶子的子节点
+	}
+	dfs(root)
+
+	return res
+}
+
+// 找树左下角的值-层序遍历取第一个节点,并依次覆盖
+func FindBottomLeftValueV1(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	queue := []*TreeNode{root}
+	target := 0
+	for len(queue) > 0 {
+		size := len(queue)
+		for i := 0; i < size; i++ {
+			if i == 0 {
+				target = queue[0].Val
+			}
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return target
+}
+
+// 路径总和-层序遍历
+func HasPathSumV1(root *TreeNode, targetSum int) bool {
+	if root == nil {
+		return false
+	}
+	nodeQueue := list.New() // 用双端链表来模拟队列
+	sumQueue := list.New()  // 用双端链表来模拟队列
+	nodeQueue.PushBack(root)
+	sumQueue.PushBack(root.Val)
+	for nodeQueue.Len() > 0 {
+		// 这种出队模式,与用一个size是类似的,都是要把所有节点出队完成
+		// 如果用一个size来出队,表示可以控制当前层节点个数
+		node := (nodeQueue.Remove(nodeQueue.Front())).(*TreeNode)
+		currentNodeSum := (sumQueue.Remove(sumQueue.Front())).(int)
+		if node.Left == nil && node.Right == nil {
+			if currentNodeSum == targetSum {
+				return true
+			}
+		}
+		if node.Left != nil {
+			nodeQueue.PushBack(node.Left)
+			sumQueue.PushBack(currentNodeSum + node.Left.Val)
+		}
+		if node.Right != nil {
+			nodeQueue.PushBack(node.Right)
+			sumQueue.PushBack(currentNodeSum + node.Right.Val)
+		}
+	}
+	return false
+}
+
+// 路径总和-递归-语言自带的闭包语法
+func HasPathSumV2(root *TreeNode, targetSum int) bool {
+	// 递归三部曲:1.定义函数入参/返回值
+	var hasPathSum func(node *TreeNode, sum int) bool
+	hasPathSum = func(node *TreeNode, sum int) bool {
+		// 2.定义终止条件
+		if node == nil {
+			return false
+		}
+		sum += node.Val
+		// 当前节点为子节点,且满足路径和等于target
+		if node.Left == nil && node.Right == nil && sum == targetSum {
+			return true
+		}
+		// 3.定义递归逻辑
+		// 当前节点不满足,继续分解检查左右子节点
+		checkLeft := hasPathSum(node.Left, sum)
+		checkRight := hasPathSum(node.Right, sum)
+		return checkLeft || checkRight
+	}
+	return hasPathSum(root, 0)
+}
+
+// 路径和II-层序遍历
+func PathSumV1(root *TreeNode, targetSum int) [][]int {
+	result := make([][]int, 0)
+	if root == nil {
+		return result
+	}
+	nodeQueue := list.New() // 用双端链表来模拟队列
+	sumQueue := list.New()  // 用双端链表来模拟队列
+	nodeQueue.PushBack(root)
+	sumQueue.PushBack([]int{root.Val})
+	for nodeQueue.Len() > 0 {
+		// 这种出队模式,与用一个size是类似的,都是要把所有节点出队完成
+		// 如果用一个size来出队,表示可以控制当前层节点个数
+		node := (nodeQueue.Remove(nodeQueue.Front())).(*TreeNode)
+		paths := (sumQueue.Remove(sumQueue.Front())).([]int)
+		// 当前节点为叶子节点，路径和匹配目标值
+		if node.Left == nil && node.Right == nil && sumInt(paths) == targetSum {
+			result = append(result, paths)
+		}
+		if node.Left != nil {
+			nodeQueue.PushBack(node.Left)
+			// 创建新的path,不能复用原有path,append是创建一个新的对象
+			leftPaths := make([]int, len(paths))
+			copy(leftPaths, paths)
+			leftPaths = append(leftPaths, node.Left.Val)
+			sumQueue.PushBack(leftPaths)
+		}
+		if node.Right != nil {
+			nodeQueue.PushBack(node.Right)
+			// 创建新的path,不能复用原有path,append是创建一个新的对象
+			rightPaths := make([]int, len(paths))
+			copy(rightPaths, paths)
+			rightPaths = append(rightPaths, node.Right.Val)
+			sumQueue.PushBack(rightPaths)
+		}
+	}
+	return result
+}
+
+func sumInt(list []int) int {
+	sum := 0
+	for _, v := range list {
+		sum += v
+	}
+	return sum
+}
+
+// 路径和II-递归
+func PathSumV3(root *TreeNode, targetSum int) [][]int {
+	result := make([][]int, 0)
+	if root == nil {
+		return result
+	}
+	var pathSum func(node *TreeNode, sum []int)
+	pathSum = func(node *TreeNode, sum []int) {
+		if node == nil {
+			return
+		}
+		// 这里也要申请新内存,切片是引用传递,底层是同一个数组
+		newSum := make([]int, len(sum))
+		copy(newSum, sum)
+		newSum = append(newSum, node.Val)
+		if node.Left == nil && node.Right == nil && sumInt(newSum) == targetSum {
+			result = append(result, newSum)
+		}
+		pathSum(node.Left, newSum)
+		pathSum(node.Right, newSum)
+	}
+	pathSum(root, []int{})
+	return result
+}
+
+// 路径和II-层序遍历
+func PathSumV2(root *TreeNode, targetSum int) [][]int {
+	result := make([][]int, 0)
+	if root == nil {
+		return result
+	}
+	nodeQueue := []*TreeNode{root} // 这里用数组来模拟队列,存储每个节点
+	sumQueue := []int{root.Val}    // 这里用数组来模拟队列,存储每个节点的路径和
+	nodeMap := make(map[*TreeNode]*TreeNode)
+	for len(nodeQueue) > 0 {
+		// 这种出队模式,与用一个size是类似的,都是要把所有节点出队完成
+		// 如果用一个size来出队,表示可以控制当前层节点个数
+		node, pathsSum := nodeQueue[0], sumQueue[0]
+		nodeQueue, sumQueue = nodeQueue[1:], sumQueue[1:] // 出队,更新队列
+		// 当前节点为叶子节点，路径和匹配目标值
+		if node.Left == nil && node.Right == nil && pathsSum == targetSum {
+			result = append(result, findPath(node, nodeMap))
+		}
+		if node.Left != nil {
+			nodeQueue = append(nodeQueue, node.Left)
+			sumQueue = append(sumQueue, pathsSum+node.Left.Val)
+			nodeMap[node.Left] = node
+		}
+		if node.Right != nil {
+			nodeQueue = append(nodeQueue, node.Right)
+			sumQueue = append(sumQueue, pathsSum+node.Right.Val)
+			nodeMap[node.Right] = node
+		}
+	}
+	return result
+}
+
+// 查找当前节点的完整路径
+func findPath(node *TreeNode, nodeMap map[*TreeNode]*TreeNode) []int {
+	path := make([]int, 0) // 默认放入的是自底向上的路径,最后需要做一次反转
+	for node != nil {
+		path = append(path, node.Val)
+		node = nodeMap[node]
+	}
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
+	return path
 }
