@@ -1077,3 +1077,232 @@ func findPath(node *TreeNode, nodeMap map[*TreeNode]*TreeNode) []int {
 	}
 	return path
 }
+
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+// 前序-递归
+func mergeTreesV1(root1 *TreeNode, root2 *TreeNode) *TreeNode {
+	var merge func(node1 *TreeNode, node2 *TreeNode) *TreeNode
+	merge = func(node1 *TreeNode, node2 *TreeNode) *TreeNode {
+		if node1 == nil {
+			return node2
+		}
+		if node2 == nil {
+			return node1
+		}
+		// 将node2的值合并到node1
+		node1.Val += node2.Val
+		// 当前节点合并完成,继续合并左子节点,右子节点
+		node1.Left = merge(node1.Left, node2.Left)
+		node1.Right = merge(node1.Right, node2.Right)
+		return node1
+	}
+	return merge(root1, root2)
+}
+
+// 层序遍历-迭代
+// 同时遍历2个节点,通过队列同时入队出队2个节点
+func mergeTreesV2(root1 *TreeNode, root2 *TreeNode) *TreeNode {
+	if root1 == nil {
+		return root2
+	}
+	if root2 == nil {
+		return root1
+	}
+	queue := []*TreeNode{root1, root2}
+	for len(queue) > 0 {
+		node1, node2 := queue[0], queue[1]
+		queue = queue[2:]
+		// 出队的2个节点,是同一位置的节点,不会为空
+		node1.Val += node2.Val
+		// 如果两棵树左节点都不为空，加入队列
+		if node1.Left != nil && node2.Left != nil {
+			queue = append(queue, node1.Left, node2.Left)
+		}
+		// 如果两棵树右节点都不为空，加入队列
+		if node1.Right != nil && node2.Right != nil {
+			queue = append(queue, node1.Right, node2.Right)
+		}
+		// 这种情况是直接把当前层的下一层处理了
+		// 当node1的左节点 为空 node2左节点不为空，就赋值过去
+		if node1.Left == nil && node2.Left != nil {
+			node1.Left = node2.Left
+		}
+		// 当node1的右节点 为空 node2右节点不为空，就赋值过去
+		if node1.Right == nil && node2.Right != nil {
+			node1.Right = node2.Right
+		}
+	}
+	return root1
+}
+
+/*
+*
+给定二叉搜索树（BST）的根节点 root 和一个整数值 val。
+你需要在 BST 中找到节点值等于 val 的节点。
+返回以该节点为根的子树。 如果节点不存在，则返回 null 。
+*/
+func SearchBSTV1(root *TreeNode, val int) *TreeNode {
+	node := root
+	for node != nil {
+		if val == node.Val { // 找到
+			return node
+		} else if val < node.Val { // 左边找
+			node = node.Left
+		} else { // 右边
+			node = node.Right
+		}
+	}
+	return nil
+}
+
+// 二叉搜索树查找-递归
+func SearchBSTV2(root *TreeNode, val int) *TreeNode {
+	if root == nil || root.Val == val {
+		return root
+	}
+	if val < root.Val {
+		return SearchBSTV2(root.Left, val)
+	}
+	if val > root.Val {
+		return SearchBSTV2(root.Right, val)
+	}
+	return nil
+}
+
+// 验证二叉树是否是二叉树搜索树
+// 如果是,则中序遍历后的结果是递增的
+// 递归版本中序遍历
+func isValidBSTV1(root *TreeNode) bool {
+	result := []int{}
+	// 1.定义递归函数的入参/返回值,本案例不需要返回值
+	var traversal func(node *TreeNode)
+	traversal = func(node *TreeNode) {
+		// 2.定义终止条件(停止递归)
+		if node == nil {
+			return
+		}
+		// 3.确认递归过程,如果调用自己
+		traversal(node.Left)
+		result = append(result, node.Val)
+		traversal(node.Right)
+	}
+	traversal(root)
+	// 检查数组是否为递增数组
+	for i := 1; i < len(result); i++ {
+		if result[i-1] >= result[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// 验证二叉树是否是二叉树搜索树
+// 如果是,则中序遍历后的结果是递增的
+// 迭代版本中序遍历-借助栈
+func isValidBSTV2(root *TreeNode) bool {
+	stack := make([]*TreeNode, 0)
+	node := root
+	var pre *TreeNode
+	for node != nil || len(stack) > 0 {
+		for node != nil {
+			stack = append(stack, node)
+			node = node.Left
+		}
+		// 出栈栈顶
+		cur := stack[len(stack)-1]
+		stack = stack[0 : len(stack)-1]
+		// 上一个比当前大,非递增,不是二叉搜索树
+		if pre != nil && cur.Val <= pre.Val {
+			return false
+		}
+		pre = cur
+		node = cur.Right // 查看右子树
+	}
+	return true
+}
+
+// 求众数-递归遍历
+func findModeV1(root *TreeNode) []int {
+	result := make([]int, 0)
+	// 1.定义递归函数的入参/返回值,本案例不需要返回值
+	var traversal func(node *TreeNode)
+	var pre *TreeNode
+	count := 0    // 表示遍历过程中，相邻相同元素的个数
+	maxCount := 0 // 表示众数的个数,相邻相同元素的最大个数
+	traversal = func(node *TreeNode) {
+		// 2.定义终止条件(停止递归)
+		if node == nil {
+			return
+		}
+		// 3.确认递归过程,如果调用自己
+		traversal(node.Left)
+		// 第一个节点或后一个节点与前一个不同,说明不是重复的元素
+		if pre == nil || node.Val != pre.Val {
+			count = 1
+		} else {
+			count++
+		}
+		// 更新结果以及maxCount
+		if count > maxCount {
+			maxCount = count
+			result = result[:0] // 清空切片
+			result = append(result, node.Val)
+		} else if count == maxCount {
+			result = append(result, node.Val)
+		}
+		pre = node // 更新当前节点为上一次访问的节点
+		traversal(node.Right)
+	}
+	traversal(root)
+	return result
+}
+
+// 二叉搜索树-插入节点
+func insertIntoBSTV1(root *TreeNode, val int) *TreeNode {
+	t := &TreeNode{
+		Val: val,
+	}
+	if root == nil {
+		return t
+	}
+	node := root
+	var p *TreeNode
+	for node != nil {
+		p = node
+		if val == node.Val {
+			return root
+		}
+		if val < node.Val {
+			node = node.Left
+		} else {
+			node = node.Right
+		}
+	}
+
+	// 找到目标节点,再比较一下插入到哪里
+	if val < p.Val { // 插入Left
+		p.Left = t
+	} else { // 插入Right
+		p.Right = t
+	}
+	return root
+}
+
+func insertIntoBSTV2(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return &TreeNode{Val: val}
+	}
+	if val < root.Val {
+		root.Left = insertIntoBSTV2(root.Left, val)
+	} else {
+		root.Right = insertIntoBSTV2(root.Right, val)
+	}
+	return root
+}

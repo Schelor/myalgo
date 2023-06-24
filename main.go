@@ -145,6 +145,7 @@ func main() {
 	fmt.Printf("HasPathSumV1=%v\n", binarytrees.HasPathSumV1(createLevelTree(), 30))
 	fmt.Printf("PathSumV1=%v\n", binarytrees.PathSumV1(createLevelTree(), 30))
 	fmt.Printf("PathSumV2=%v\n", binarytrees.PathSumV2(createLevelTree(), 30))
+	fmt.Printf("SearchBST=%v\n", binarytrees.SearchBSTV1(createSearchTree(), 2))
 
 }
 
@@ -156,7 +157,7 @@ func createTree() *binarytrees.TreeNode {
 }
 
 func createLevelTree() *binarytrees.TreeNode {
-	a := &binarytrees.TreeNode{Val: 3,
+	a := &binarytrees.TreeNode{Val: 10,
 		Left: &binarytrees.TreeNode{Val: 9},
 		Right: &binarytrees.TreeNode{Val: 20,
 			Left:  &binarytrees.TreeNode{Val: 15},
@@ -168,5 +169,15 @@ func createRevertTree() *binarytrees.TreeNode {
 	a := &binarytrees.TreeNode{Val: 1,
 		Left:  &binarytrees.TreeNode{Val: 2},
 		Right: &binarytrees.TreeNode{Val: 2}}
+	return a
+}
+
+func createSearchTree() *binarytrees.TreeNode {
+	a := &binarytrees.TreeNode{Val: 4,
+		Left: &binarytrees.TreeNode{Val: 2,
+			Left:  &binarytrees.TreeNode{Val: 1},
+			Right: &binarytrees.TreeNode{Val: 3}},
+		Right: &binarytrees.TreeNode{Val: 7},
+	}
 	return a
 }
