@@ -467,3 +467,90 @@ func NumberOfSubarrays(nums []int, k int) int {
 	}
 	return count
 }
+
+// 在一个int数组里查找这样的数，它大于等于左侧所有数，小于等于右侧所有数。
+// 暴力解法
+func FindNum_Soluction1(nums []int) []int {
+	n := len(nums)
+	var ans []int = make([]int, 0)
+	for i := 0; i < n; i++ {
+		// 在0~i直接查找最大值
+		// 在i~n-1直接查找最小值
+		max, min := nums[0], nums[i]
+		for j := 0; j <= i; j++ {
+			if max < nums[j] {
+				max = nums[j]
+			}
+		}
+		for k := i; k < n; k++ {
+			if nums[k] < min {
+				min = nums[k]
+			}
+		}
+		// 如果当前值：等于左侧最大值，等于右侧最小值，则满足
+		if nums[i] == max && nums[i] == min {
+			ans = append(ans, nums[i])
+		}
+	}
+	return ans
+}
+
+// 辅助空间O(N)降低时间复杂度
+func FindNum_Soluction2(nums []int) []int {
+	n := len(nums)
+	var ans []int = make([]int, 0)
+	var a []int = make([]int, n)
+	// 查找当前下标i右侧的最小值,从后向前遍历最直接
+	min := nums[n-1]
+	for i := n - 1; i >= 0; i-- {
+		if nums[i] < min {
+			min = nums[i]
+		}
+		a[i] = min
+	}
+	// 查找当前下标i左侧最大值,然后比较当前下标i对应的最大值与最小值
+	max := nums[0]
+	for i := 0; i < n; i++ {
+		if nums[i] > max {
+			max = nums[i]
+		}
+		if nums[i] == max && nums[i] == a[i] {
+			ans = append(ans, nums[i])
+		}
+	}
+	return ans
+}
+
+// 辅助空间O(N)降低时间复杂度
+func FindNumV2(nums []int) []int {
+	n := len(nums)
+	var ans []int = make([]int, 0)
+	var a []int = make([]int, n)
+	// 查找当前下标i左侧的最小值,从前到后遍历
+	min := nums[0]
+	for i := 0; i < n; i++ {
+		if nums[i] < min {
+			min = nums[i]
+		}
+		a[i] = min
+	}
+	// 查找当前下标i右侧最大值,然后比较当前下标i对应的最大值与最小值
+	max := nums[n-1]
+	for i := n - 1; i >= 0; i-- {
+		if nums[i] > max {
+			max = nums[i]
+		}
+		if nums[i] == max && nums[i] == a[i] {
+			ans = append(ans, nums[i])
+		}
+	}
+	ReverseInt(ans)
+	return ans
+}
+
+// 反转切片数组，传入的是引用,直接修改值
+func ReverseInt(nums []int) {
+	for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+}

@@ -9,6 +9,7 @@ import (
 	"myalgo/hashs"
 	"myalgo/heaps"
 	"myalgo/integers"
+	"myalgo/sorts"
 	"myalgo/stackqueues"
 )
 
@@ -146,6 +147,12 @@ func main() {
 	fmt.Printf("PathSumV1=%v\n", binarytrees.PathSumV1(createLevelTree(), 30))
 	fmt.Printf("PathSumV2=%v\n", binarytrees.PathSumV2(createLevelTree(), 30))
 	fmt.Printf("SearchBST=%v\n", binarytrees.SearchBSTV1(createSearchTree(), 2))
+
+	fmt.Printf("FindNum_Soluction1=%v\n", arrays.FindNum_Soluction1([]int{1, 6, 9, 2, 1, 5, 15, 20}))
+	fmt.Printf("FindNum_Soluction2=%v\n", arrays.FindNum_Soluction2([]int{1, 6, 9, 2, 1, 5, 15, 20}))
+	fmt.Printf("FindNumV2=%v\n", arrays.FindNumV2([]int{10, 8, 9, 7, 6, 5, 1, 3, 2}))
+	fmt.Printf("MergeSort=%v\n", sorts.MergeSort([]int{8, 4, 5, 7, 1, 3, 6, 2}))
+	fmt.Printf("MergeSort=%v\n", sorts.MergeSort([]int{10, 8, 9, 7, 6, 5, 1, 3, 2}))
 
 }
 
