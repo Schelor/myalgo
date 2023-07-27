@@ -1,1 +1,1 @@
-# myalgo
+主要是用golang来写一些算法与数据结构相关的习题，题目主要是来自Leetcode.
